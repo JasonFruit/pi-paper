@@ -14,6 +14,7 @@ Other drivers for the Waveshare display
 
 [https://github.com/SchmidChristian/ePaperDriver]
 [https://github.com/yy502/ePaperDisplay]
+[https://github.com/sabas1080/LibraryEPD]
 
 Reading and writing from the Raspberry PI's serial port
 ----------------------------------------------------------------------
