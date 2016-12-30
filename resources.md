@@ -3,11 +3,6 @@ Resources
 
 Some resources I expect to be helpful in the course of the project.
 
->   The whole age of computer has made it where nobody knows exactly
->   what's going on.
->
->   --- Donald J. Trump
-
 Documents on the display I intend to use:
 ----------------------------------------------------------------------
 
