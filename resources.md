@@ -24,3 +24,8 @@ Reading and writing from the Raspberry PI's serial port
 Python in-memory terminal emulator
 ----------------------------------------------------------------------
 [https://github.com/selectel/pyte/tree/master/examples]
+
+VT102 terminal escape and control codes
+----------------------------------------------------------------------
+
+[http://vt100.net/docs/vt102-ug/appendixc.html]
