@@ -41,5 +41,5 @@ if __name__ == "__main__":
         if event.keycode == "KEY_Z": # Quit if Z is pressed
             exit()
             
-    with ExclusiveKeyReader("/dev/input/event6") as kr:
+    with ExclusiveKeyReader("/dev/input/event4") as kr:
         kr.event_loop(handler)
