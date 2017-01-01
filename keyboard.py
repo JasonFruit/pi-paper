@@ -37,13 +37,19 @@ else:
 
     def displayer():
         prev_screen = ""
+        prev_x, prev_y = 100, 100 # impossible!
         while True:
-            s = "\n".join(screen.display)
-            if s != prev_screen:
+            s = screen.display
+            if (("\n".join(s) != prev_screen) or
+                (prev_x != screen.cursor.x) or
+                (prev_y != screen.cursor.y)):
+                
                 paper.cls()
-                paper.draw_screen(screen.display)
+                paper.draw_screen(s)
+                paper.draw_cursor(screen.cursor.y, screen.cursor.x)
                 paper.finalize()
-                prev_screen = s
+                prev_screen = "\n".join(s)
+                prev_x, prev_y = screen.cursor.x, screen.cursor.y
             time.sleep(2)
 
     display_thread = Thread(target=displayer)

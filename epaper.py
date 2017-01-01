@@ -58,6 +58,18 @@ class EPaper(serial.Serial):
         for row in range(len(screen)):
             for col in range(len(screen[row])):
                 self._draw_char(screen[row][col], row, col)
+
+    def draw_cursor(self, row, column):
+        cmd = b"\xA5\x00\x11\x25"
+        cmd += struct.pack(">I", self._column_to_pixels(column))[2:]
+        cmd += struct.pack(">I", self._row_to_pixels(row))[2:]
+        cmd += struct.pack(">I", self._column_to_pixels(column+1)-2)[2:]
+        cmd += struct.pack(">I", self._row_to_pixels(row+1)-2)[2:]
+        cmd += b"\xCC\x33\xC3\x3C"
+        cmd += bytes([get_parity(cmd)])
+
+        return self.transmit_command(cmd)
+        
         
     
     def finalize(self):
@@ -81,6 +93,6 @@ if __name__ == "__main__":
                         Love,
 
                         Jason""".split("\n")
-
+    display.draw_cursor(2, 5)
     display.draw_screen(screen)
     display.finalize()
