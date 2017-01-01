@@ -2,16 +2,23 @@ import os
 import pty
 import pyte
 from threading import Thread
+from epaper import EPaper
+import time
 
 from key_events import ExclusiveKeyReader
 from keys import KeyHandler
 
-screen = pyte.Screen(80, 24)
+screen = pyte.Screen(34, 18)
 stream = pyte.Stream()
 
 stream.attach(screen)
 
 child_pid, fd = pty.fork()
+
+os.environ["COLUMNS"] = "34"
+os.environ["LINES"] = "18"
+
+paper = EPaper("/dev/ttyS0", debug=False)
 
 if child_pid == 0:
     os.execlp("/bin/bash", "PaperTerminal", "-i")
@@ -33,9 +40,11 @@ else:
         while True:
             s = "\n".join(screen.display)
             if s != prev_screen:
-                print("\n"*100)
-                print(s)
+                paper.cls()
+                paper.draw_screen(screen.display)
+                paper.finalize()
                 prev_screen = s
+            time.sleep(2)
 
     display_thread = Thread(target=displayer)
     display_thread.daemon = True
