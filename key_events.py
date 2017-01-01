@@ -20,7 +20,9 @@ class KeyReader(object):
     def event_loop(self, handler):
         for event in self._device.read_loop():
             if event.type == ecodes.EV_KEY:
-                handler(categorize(event))
+                cat = categorize(event)
+                handler(cat.keycode,
+                        cat.keystate)
 
 
 class ExclusiveKeyReader(KeyReader):
@@ -36,10 +38,10 @@ class ExclusiveKeyReader(KeyReader):
 
 if __name__ == "__main__":
     print(keyboards())
-    def handler(event):
-        print(event.keycode, event.keystate)
-        if event.keycode == "KEY_Z": # Quit if Z is pressed
+    def handler(keycode, keystate):
+        print(keycode, keystate)
+        if keycode == "KEY_Z": # Quit if Z is pressed
             exit()
             
-    with ExclusiveKeyReader("/dev/input/event4") as kr:
+    with ExclusiveKeyReader("/dev/input/event6") as kr:
         kr.event_loop(handler)
