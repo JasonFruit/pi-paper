@@ -27,7 +27,10 @@ class KeyReader(object):
 
 class ExclusiveKeyReader(KeyReader):
     """Like a KeyReader object, except grabs the device for exclusive
-    access; must be used in a `with` block."""
+    access; must be used in a `with` block so it releases the device
+    if an error occurs.
+
+    """
     def __init__(self, device_fn):
         KeyReader.__init__(self, device_fn)
     def __enter__(self):
@@ -37,11 +40,5 @@ class ExclusiveKeyReader(KeyReader):
         self._device.ungrab()
 
 if __name__ == "__main__":
-    print(keyboards())
-    def handler(keycode, keystate):
-        print(keycode, keystate)
-        if keycode == "KEY_Z": # Quit if Z is pressed
-            exit()
-            
-    with ExclusiveKeyReader("/dev/input/event6") as kr:
-        kr.event_loop(handler)
+    for k in keyboards():
+        print(k.name, ":", k.fn, k.info)

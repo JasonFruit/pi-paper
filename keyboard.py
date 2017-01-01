@@ -44,6 +44,6 @@ else:
     def feed_fn(asc):
         os.write(fd, bytes(chr(asc), "utf-8"))
 
-    with ExclusiveKeyReader("/dev/input/event4") as key_reader:
+    with ExclusiveKeyReader("/dev/input/event1") as key_reader:
         key_handler = KeyHandler(key_reader, feed_fn)
         key_handler.run()
