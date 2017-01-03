@@ -13,12 +13,12 @@ stream = pyte.Stream()
 
 stream.attach(screen)
 
-child_pid, fd = pty.fork()
-
 os.environ["COLUMNS"] = "34"
 os.environ["LINES"] = "18"
 
 paper = EPaper("/dev/ttyS0", debug=False)
+
+child_pid, fd = pty.fork()
 
 if child_pid == 0:
     os.execlp("/bin/bash", "PaperTerminal", "-i")
