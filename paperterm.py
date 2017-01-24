@@ -46,7 +46,7 @@ class PaperTerm(ExclusiveKeyReader):
         """
         while True:
             try:
-                out = os.read(self.bash_fd, 4096)
+                out = os.read(self.fd, 4096)
                 self.stream.feed(out.decode("utf-8"))
             except OSError:
                 break # if there's nothing to read, kill the reader
@@ -75,7 +75,7 @@ class PaperTerm(ExclusiveKeyReader):
                 self.paper.draw_screen(s)
                 self.paper.draw_cursor(self.screen.cursor.y,
                                        self.screen.cursor.x)
-                paper.finalize()
+                self.paper.finalize()
                 prev_screen = "\n".join(s)
                 prev_x, prev_y = (self.screen.cursor.x,
                                   self.screen.cursor.y)
