@@ -48,7 +48,16 @@ class EPaper(serial.Serial):
 
         length = self._ensure_byte_length(bytes([9 + len(text) + 5,]), 2)
 
-        cmd = b"\xA5" + length + b"\x30" + x + y + bytes(text, "ascii") + b"\x00\xCC\x33\xC3\x3C"
+        text_bytes = bytes(text, "utf-8")
+
+        def replace_byte(b):
+            if b > 256:
+                return 32
+            return b
+
+        text_bytes = bytes([replace_byte(b) for b in text_bytes])
+        
+        cmd = b"\xA5" + length + b"\x30" + x + y + text_bytes + b"\x00\xCC\x33\xC3\x3C"
         cmd = cmd + bytes([get_parity(cmd)])
 
         return self.transmit_command(cmd)
