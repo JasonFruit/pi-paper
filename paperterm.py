@@ -112,7 +112,11 @@ class PaperTerm(ExclusiveKeyReader):
             key_handler.run() # loops until program end
             
 if __name__ == "__main__":
-    with PaperTerm("/dev/input/event1", "/dev/ttyS0") as term:
+    import sys
+    try:
+        dev = sys.argv[1]
+    except:
+        dev = "/dev/ttyS0"
+        
+    with PaperTerm("/dev/input/event1", dev) as term:
         term.start()
-    
-    

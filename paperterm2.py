@@ -6,7 +6,8 @@ import pyte
 
 from key_events import ExclusiveKeyReader
 from keys import KeyHandler
-import epd, pervasive
+import pervasive
+import epd_func
 from PIL import Image, ImageFont, ImageDraw
 
 class PaperTerm(ExclusiveKeyReader):
@@ -32,7 +33,7 @@ class PaperTerm(ExclusiveKeyReader):
         self.stream.attach(self.screen)
 
         self.display = pervasive.PervasiveDisplay()
-        self.converter = epd.ImageConverter()
+        # self.converter = epd.ImageConverter()
         
         self.debug = debug
 
@@ -49,7 +50,10 @@ class PaperTerm(ExclusiveKeyReader):
         while True:
             try:
                 out = os.read(self.bash_fd, 4096)
-                self.stream.feed(out.decode("utf-8"))
+                try:
+                    self.stream.feed(out.decode("utf-8"))
+                except UnicodeDecodeError:
+                    pass  # at least don't die?
             except OSError:
                 break # if there's nothing to read, kill the reader
                       # thread
@@ -71,34 +75,36 @@ class PaperTerm(ExclusiveKeyReader):
         
         while True:
             s = self.screen.display
+            scrn_x, scrn_y = self.screen.cursor.x, self.screen.cursor.y
             
             # if the display or cursor position has changed, redraw
             if (("\n".join(s) != prev_screen) or
-                (prev_x != self.screen.cursor.x) or
-                (prev_y != self.screen.cursor.y)):
+                (prev_x != scrn_x) or
+                (prev_y != scrn_y)):
 
                 image = Image.new("1", (800, 480), 1)
-                font = ImageFont.truetype("fonts/RobotoMono-Regular.ttf", size=15)
+                font = ImageFont.truetype("fonts/RobotoMono-Bold.ttf", size=15)
                 drawer = ImageDraw.Draw(image)
                 
                 for row_ind in range(len(s)):
                     drawer.text((14, 18 * row_ind), s[row_ind], font=font)
 
-                # image.save("screens/screen-%s.png" % draw_num)
-                # draw_num += 1
-
+                char_width = 9.0
+                drawer.rectangle([int(scrn_x * char_width + 14), scrn_y * 18,
+                                  int(scrn_x * char_width + 14 + char_width), scrn_y * 18 + 18],
+                                 outline=0)
                 image = image.rotate(270)
                 
-                epd_data = self.converter.convert(image)
+                epd_data = epd_func.convert(image)
                 self.display.reset_data_pointer()
                 self.display.send_image(epd_data)
                 self.display.update_display()
                 
                 prev_screen = "\n".join(s)
-                prev_x, prev_y = (self.screen.cursor.x,
-                                  self.screen.cursor.y)
-            time.sleep(2) # only check every couple seconds; this is
-                          # not a fast-updating display
+                prev_x, prev_y = (scrn_x,
+                                  scrn_y)
+            # time.sleep(0.5) # only check every couple seconds; this is
+                            # not a fast-updating display
 
     def _subterm(self, rows, columns, rows_above_cursor=1, columns_before_cursor=5):
         screen = self.screen.display

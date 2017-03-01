@@ -1,5 +1,7 @@
 from copy import copy
 
+_alphabet = "abcdefghijklmnopqrstuvwxyz"
+
 control_codes = {'NUL': 0,
                  'BS': 8,
                  'EOT': 4,
@@ -48,15 +50,18 @@ _key_assoc = {
     "KEY_BACKSPACE": control_codes["DEL"],
     "KEY_ESC": control_codes["ESC"],
     "C-KEY_D": control_codes["EOT"],
-    "KEY_ENTER": control_codes["LF"],
+    "KEY_ENTER": _alphabet.index("m") + 1,
     "KEY_RETURN": control_codes["LF"],
     "C-KEY_SPACE": control_codes["NUL"],
     "C-KEY_LEFTBRACE": control_codes["ESC"],
-    "KEY_PAGEUP": ord('\x49'),
-    "KEY_PAGEDOWN": ord('\x51'),
+    "KEY_UP": [27, ord("["), ord("A")],
+    "KEY_DOWN": [27, ord("["), ord("B")],
+    "KEY_RIGHT": [27, ord("["), ord("C")],
+    "KEY_LEFT": [27, ord("["), ord("D")],
+    "KEY_PAGEUP": [27, ord("["), ord("V")],
+    "KEY_PAGEDOWN": [27, ord("["), ord("U")],
 }
 
-_alphabet = "abcdefghijklmnopqrstuvwxyz"
 for letter in _alphabet:
     _key_assoc["KEY_%s" % letter.upper()] = ord(letter)
     _key_assoc["S-KEY_%s" % letter.upper()] = ord(letter.upper())
@@ -143,7 +148,11 @@ class KeyHandler(object):
             except KeyError:
                 return False
             self.maybe_send_alt()
-            self.receiver(char)
+            if type(char) == list:
+                for c in char:
+                    self.receiver(c)
+            else:
+                self.receiver(char)
             return True
         else:
             return False    

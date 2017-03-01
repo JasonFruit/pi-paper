@@ -5,7 +5,7 @@ class ImageConverter(object):
         pass
 
     def _to_ints(self, img):
-        data=[0]*384000
+        data=array("B", [0]*384000)
         c=0
         for x in range(0,800):
             for y in range(0, 480):
@@ -15,14 +15,14 @@ class ImageConverter(object):
         return data
     
     def _downsample(self, ints):
-        pixels = [0] * len(ints)
+        pixels = array("B", [0] * len(ints))
         for i in range(0, len(ints)):
             if ints[i] <= 127:
                 pixels[i] = 255
         return pixels
 
     def _to_epd_pixel4(self, raw):
-        pixels = [0]*int(len(raw)/8)
+        pixels = array("B", [0]*int(len(raw)/8))
         row = 30
         s = 1
         for i in range(0, len(raw),16):
@@ -55,7 +55,7 @@ class ImageConverter(object):
     def convert(self, img):
         img = img.convert("LA")
         img = img.load()
-        return self._to_epd_pixel4(self._downsample(self._to_ints(img)))
+        return self._to_epd_pixel4(self._downsample(self._to_ints(img))).tolist()
 
 if __name__ == "__main__":
     from PIL import Image
